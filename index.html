@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en" dir="ltr" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SchoolKey — One key for everything school</title>
+  <meta name="description" content="Homework, exams, grade books, timetables and AI reports for students, parents, teachers and school leaders. One app. One login with UAE Pass.">
+  <meta name="theme-color" content="#06070f">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%234d7cff'/%3E%3Ccircle cx='12' cy='16' r='5' fill='none' stroke='white' stroke-width='2.6'/%3E%3Cpath d='M17 16h9m-3 0v4m-3-4v3' stroke='white' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E">
+  <meta property="og:title" content="SchoolKey — One key for everything school">
+  <meta property="og:description" content="Homework, grades, timetables, AI reports and a Learning Passport that moves with every student. One app, one login with UAE Pass.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary">
+  <!-- Apply saved theme and language before the page paints -->
+  <script>
+    (function () {
+      var t, l, d = document.documentElement;
+      try { t = localStorage.getItem("sk-theme"); l = localStorage.getItem("sk-lang"); } catch (e) {}
+      if (t !== "light" && t !== "dark") t = matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+      d.setAttribute("data-theme", t);
+      if (l === "ar") { d.lang = "ar"; d.dir = "rtl"; }
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=Inter+Tight:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@500;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script type="importmap">
+    { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+  </script>
+</head>
+<body class="is-loading">
+
+<!-- Preloader -->
+<div class="loader" id="loader" aria-hidden="true">
+  <div class="loader-key">
+    <svg viewBox="0 0 120 60"><circle cx="30" cy="30" r="18" /><path d="M48 30h60M92 30v14M78 30v10" /></svg>
+  </div>
+  <p class="loader-count"><span id="loader-n">0</span>%</p>
+</div>
+
+<!-- Cursor -->
+<div class="cursor" id="cursor" aria-hidden="true"><span></span><b data-i18n="cursor.drag">Drag</b></div>
+<div class="grain" aria-hidden="true"></div>
+
+<header class="nav" id="nav">
+  <a href="#top" class="logo" aria-label="SchoolKey">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9"/><circle cx="12" cy="16" r="5"/><path d="M17 16h9m-3 0v4m-3-4v3"/></svg>
+    SchoolKey
+  </a>
+  <nav class="nav-links" aria-label="Main">
+    <a href="#roles" data-hover data-i18n="nav.roles">Roles</a>
+    <a href="#ai" data-hover data-i18n="nav.ai">AI</a>
+    <a href="#passport" data-hover data-i18n="nav.passport">Passport</a>
+    <a href="#pricing" data-hover data-i18n="nav.pricing">Pricing</a>
+    <a href="#faq" data-hover data-i18n="nav.faq">FAQ</a>
+  </nav>
+  <div class="nav-right">
+    <button class="toggle" id="lang-toggle" type="button" data-hover data-i18n-aria="toggle.langAria" aria-label="Switch to Arabic">
+      <span data-i18n="toggle.lang" lang="ar">عربي</span>
+    </button>
+    <button class="toggle" id="theme-toggle" type="button" data-hover aria-label="Switch theme">
+      <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
+      <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></svg>
+    </button>
+    <a href="#demo" class="btn btn-light magnetic nav-demo" data-hover><span data-i18n="nav.demo">Book a demo</span></a>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO: particles morph from six apps into one key -->
+  <section class="hero" id="hero">
+    <div class="hero-sticky">
+      <canvas id="hero-canvas" aria-hidden="true"></canvas>
+      <div class="hero-glow" aria-hidden="true"></div>
+
+      <div class="hero-copy stage-1">
+        <p class="kicker" data-i18n="hero1.kicker">The problem</p>
+        <h1 class="big split" data-i18n="hero1.title">Six apps.<br>Six passwords.</h1>
+        <p class="sub" data-i18n="hero1.sub">Homework here, marks there, timetables lost in WhatsApp groups.</p>
+      </div>
+
+      <div class="hero-copy stage-2">
+        <p class="kicker">SchoolKey</p>
+        <h2 class="big split" data-i18n="hero2.title">One <em>key</em> for<br>everything school.</h2>
+        <p class="sub" data-i18n="hero2.sub">Students, parents, teachers and school leaders. One app, one login with UAE Pass.</p>
+        <div class="hero-cta">
+          <a href="#demo" class="btn btn-primary magnetic" data-hover><span data-i18n="hero2.cta1">Book a free demo</span></a>
+          <a href="#roles" class="btn btn-ghost magnetic" data-hover><span data-i18n="hero2.cta2">See how it works</span></a>
+        </div>
+      </div>
+
+      <div class="scroll-hint" aria-hidden="true"><span></span><b data-i18n="hero.scroll">Scroll</b></div>
+    </div>
+  </section>
+
+  <!-- Manifesto: words light up on scroll -->
+  <section class="manifesto">
+    <p class="manifesto-text" id="manifesto" data-i18n="manifesto">School should be about learning, not logging in. SchoolKey brings homework, exams, grade books, timetables and messages into one place, and uses AI to tell every person what to do next.</p>
+  </section>
+
+  <!-- Roles: pinned phone, screens change as you scroll -->
+  <section class="roles" id="roles">
+    <div class="roles-inner">
+      <div class="roles-list">
+        <p class="kicker" data-i18n="roles.kicker">Same school, four views</p>
+        <article class="role" data-i="0">
+          <span class="role-n">01</span>
+          <h3 data-i18n="role1.h">Student</h3>
+          <p data-i18n="role1.p">Today's homework, quizzes and marks on one timeline, plus assignments picked to raise your level.</p>
+        </article>
+        <article class="role" data-i="1">
+          <span class="role-n">02</span>
+          <h3 data-i18n="role2.h">Parent</h3>
+          <p data-i18n="role2.p">Every child's grades, homework and attendance, compared with last month so you know where they stand.</p>
+        </article>
+        <article class="role" data-i="2">
+          <span class="role-n">03</span>
+          <h3 data-i18n="role3.h">Teacher</h3>
+          <p data-i18n="role3.p">Post homework, grade once, and get an AI report on every class on the 1st of each month.</p>
+        </article>
+        <article class="role" data-i="3">
+          <span class="role-n">04</span>
+          <h3 data-i18n="role4.h">Head of section</h3>
+          <p data-i18n="role4.p">Upload each grade's timetable, see every class at a glance, catch at-risk students early.</p>
+        </article>
+      </div>
+
+      <div class="phone-wrap">
+        <div class="phone" id="phone">
+          <div class="notch"></div>
+          <!-- Student -->
+          <div class="screen is-on" data-i="0">
+            <p class="s-hi" data-i18n="ph.s.hi">Hi Sara 👋</p>
+            <div class="s-card s-blue"><small data-i18n="ph.s.due">Due today</small><b data-i18n="ph.s.task">Math worksheet</b><div class="s-bar"><i style="--w:70%"></i></div></div>
+            <div class="s-grid"><div class="s-card"><small data-i18n="ph.s.quiz">Quiz</small><b class="s-num">18/20</b></div><div class="s-card"><small data-i18n="ph.s.streak">Streak</small><b class="s-num">🔥 6</b></div></div>
+            <div class="s-card"><small data-i18n="ph.s.lvl">Level up</small><ul class="s-list"><li data-i18n="ph.s.l1">Linear equations practice</li><li data-i18n="ph.s.l2">Write 3 essay hooks</li></ul></div>
+          </div>
+          <!-- Parent -->
+          <div class="screen" data-i="1">
+            <p class="s-hi" data-i18n="ph.p.hi">Sara · October</p>
+            <div class="s-card"><small data-i18n="ph.p.vs">vs September</small>
+              <div class="s-cmp"><span data-i18n="sub.math">Math</span><i style="--a:72%;--b:85%"></i><em class="up">+13</em></div>
+              <div class="s-cmp"><span data-i18n="sub.science">Science</span><i style="--a:88%;--b:90%"></i><em class="up">+2</em></div>
+              <div class="s-cmp"><span data-i18n="sub.english">English</span><i style="--a:81%;--b:79%"></i><em class="down">−2</em></div>
+              <div class="s-cmp"><span data-i18n="sub.arabic">Arabic</span><i style="--a:70%;--b:82%"></i><em class="up">+12</em></div>
+            </div>
+            <div class="s-card s-gold"><small data-i18n="ph.p.sum">Summary</small><b data-i18n="ph.p.sumt">Big jump in Math and Arabic. Watch English essays.</b></div>
+          </div>
+          <!-- Teacher -->
+          <div class="screen" data-i="2">
+            <p class="s-hi" data-i18n="ph.t.hi">8B · Math</p>
+            <div class="s-card s-ai"><small data-i18n="ph.t.ai">✦ AI monthly report</small><b data-i18n="ph.t.ait">Average 78%, up 4. Weakest topic: linear equations. 5 students need support.</b></div>
+            <div class="s-grid"><div class="s-card"><small data-i18n="ph.t.sub">Submitted</small><b class="s-num">24/28</b></div><div class="s-card"><small data-i18n="ph.t.present">Present</small><b class="s-num">27</b></div></div>
+            <div class="s-card"><small data-i18n="ph.t.ask">Ask the assistant</small><b data-i18n="ph.t.q">Who dropped most this month?</b></div>
+          </div>
+          <!-- Admin -->
+          <div class="screen" data-i="3">
+            <p class="s-hi" data-i18n="ph.a.hi">Grade 8 · Section</p>
+            <div class="s-card s-mint"><small data-i18n="ph.a.up">Timetable uploaded</small><b data-i18n="ph.a.sent">Sent to 112 students, 106 parents, 14 teachers</b></div>
+            <div class="s-grid"><div class="s-card"><small data-i18n="ph.a.avg">Average</small><b class="s-num">84%</b></div><div class="s-card"><small data-i18n="ph.a.risk">At risk</small><b class="s-num">6</b></div></div>
+            <div class="s-card"><small data-i18n="ph.a.wa">WhatsApp groups replaced</small><b class="s-num" data-i18n="ph.a.wan">23 → 0</b></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI: horizontal scroll through four panels -->
+  <section class="ai" id="ai">
+    <div class="ai-pin">
+      <div class="ai-head">
+        <p class="kicker" data-i18n="ai.kicker">Smart features</p>
+        <h2 class="big split" data-i18n="ai.title">AI that does<br>the <em>homework</em><br>for teachers.</h2>
+        <div class="ai-controls">
+          <button class="ai-arrow" id="ai-prev" type="button" data-hover data-i18n-aria="ai.prev" aria-label="Previous feature">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+          </button>
+          <div class="ai-progress" aria-hidden="true"><span id="ai-progress"></span></div>
+          <button class="ai-arrow" id="ai-next" type="button" data-hover data-i18n-aria="ai.next" aria-label="Next feature">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+          </button>
+          <p class="ai-hint" data-i18n="ai.hint">Drag, swipe or use the arrows</p>
+        </div>
+      </div>
+      <div class="ai-track" id="ai-track">
+
+        <article class="panel">
+          <p class="panel-who" data-i18n="p1.who">Teachers</p>
+          <h3 data-i18n="p1.h">A report on every class, every month.</h3>
+          <div class="report">
+            <p class="report-head"><span class="spark">✦</span> <span data-i18n="p1.head">8B Math · October</span></p>
+            <p class="report-text" id="report-text"></p>
+            <div class="report-bars" aria-hidden="true">
+              <i style="--h:58%"></i><i style="--h:72%"></i><i style="--h:64%"></i><i style="--h:81%"></i><i style="--h:78%"></i><i style="--h:90%"></i>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <p class="panel-who" data-i18n="p2.who">Parents</p>
+          <h3 data-i18n="p2.h">This month vs last month.</h3>
+          <div class="cmp" role="img" data-i18n-aria="p2.aria" aria-label="Math 72 to 85, Science 88 to 90, English 81 to 79, Arabic 70 to 82">
+            <div class="cmp-row"><span data-i18n="sub.math">Math</span><div class="cmp-bars"><i class="last" style="--w:72%"></i><i class="now" style="--w:85%"></i></div><em class="up">+13</em></div>
+            <div class="cmp-row"><span data-i18n="sub.science">Science</span><div class="cmp-bars"><i class="last" style="--w:88%"></i><i class="now" style="--w:90%"></i></div><em class="up">+2</em></div>
+            <div class="cmp-row"><span data-i18n="sub.english">English</span><div class="cmp-bars"><i class="last" style="--w:81%"></i><i class="now" style="--w:79%"></i></div><em class="down">−2</em></div>
+            <div class="cmp-row"><span data-i18n="sub.arabic">Arabic</span><div class="cmp-bars"><i class="last" style="--w:70%"></i><i class="now" style="--w:82%"></i></div><em class="up">+12</em></div>
+            <p class="cmp-legend"><span class="sw last"></span><span data-i18n="m.sep">September</span> <span class="sw now"></span><span data-i18n="m.oct">October</span></p>
+          </div>
+        </article>
+
+        <article class="panel">
+          <p class="panel-who" data-i18n="p3.who">Heads of section</p>
+          <h3 data-i18n="p3.h">Goodbye, 23 WhatsApp groups.</h3>
+          <div class="tt">
+            <div class="bubbles" aria-hidden="true">
+              <span data-i18n="b1">Grade 8A timetable?? 😩</span><span data-i18n="b2">Is Sunday changed?</span><span data-i18n="b3">Pls resend the PDF</span><span data-i18n="b4">Which version is right</span><span data-i18n="b5">8C class group</span><span data-i18n="b6">Wrong group sorry</span>
+            </div>
+            <div class="tt-grid" data-i18n-aria="p3.aria" aria-label="Weekly timetable">
+              <b></b><b data-i18n="d.mon">Mon</b><b data-i18n="d.tue">Tue</b><b data-i18n="d.wed">Wed</b>
+              <b>1</b><i class="c1" data-i18n="tt.math">Math</i><i class="c2" data-i18n="tt.english">English</i><i class="c3" data-i18n="tt.science">Science</i>
+              <b>2</b><i class="c4" data-i18n="tt.arabic">Arabic</i><i class="c1" data-i18n="tt.math">Math</i><i class="c5" data-i18n="tt.art">Art</i>
+              <b>3</b><i class="c3" data-i18n="tt.science">Science</i><i class="c4" data-i18n="tt.arabic">Arabic</i><i class="c2" data-i18n="tt.english">English</i>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <p class="panel-who" data-i18n="p4.who">Students</p>
+          <h3 data-i18n="p4.h">Assignments that level you up.</h3>
+          <div class="lvl">
+            <div class="lvl-ring" aria-hidden="true">
+              <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" class="track"/><circle cx="60" cy="60" r="52" class="fill" id="lvl-fill"/></svg>
+              <p><b id="lvl-n" data-i18n="lvl.6">Level 6</b><small data-i18n="sub.math">Math</small></p>
+            </div>
+            <ul class="lvl-list">
+              <li><span data-i18n="lvl.t1">Linear equations · 10 min</span><em>+40 XP</em></li>
+              <li><span data-i18n="lvl.t2">Essay hooks · 3 ideas</span><em>+30 XP</em></li>
+              <li><span data-i18n="lvl.t3">Cell structure quiz</span><em>+25 XP</em></li>
+            </ul>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Made for UAE schools: four small live demos -->
+  <section class="bento-sec" id="more">
+    <p class="kicker" data-i18n="bn.kicker">Made for the UAE</p>
+    <h2 class="big split" data-i18n="bn.title">Built for how UAE<br>schools <em>really</em> work.</h2>
+
+    <div class="bento">
+      <!-- 1. Weekly voice recap: really speaks with the device's voice -->
+      <article class="bcard b-voice">
+        <p class="panel-who" data-i18n="bn.v.who">Parents · Weekly voice recap</p>
+        <h3 data-i18n="bn.v.h">Every Thursday, hear your child's week in 60 seconds.</h3>
+        <div class="voice">
+          <button class="play" id="voice-play" type="button" data-hover data-i18n-aria="bn.v.play" aria-label="Play the recap">
+            <svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+            <svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>
+          </button>
+          <div class="wave" id="wave" aria-hidden="true"></div>
+          <div class="voice-langs" role="group" data-i18n-aria="bn.v.langs" aria-label="Recap language">
+            <button type="button" data-vl="en" aria-pressed="true">English</button>
+            <button type="button" data-vl="ar" aria-pressed="false" lang="ar">العربية</button>
+          </div>
+        </div>
+        <p class="voice-text" id="voice-text"></p>
+        <p class="voice-note" data-i18n="bn.v.note">This preview uses your device's voice. SchoolKey will use a natural AI voice in the parent's language.</p>
+      </article>
+
+      <!-- 2. I'm lost: live class pulse -->
+      <article class="bcard b-lost">
+        <p class="panel-who" data-i18n="bn.l.who">Teachers · Live class pulse</p>
+        <h3 data-i18n="bn.l.h">An "I'm lost" button for every student.</h3>
+        <div class="lost-grid" id="lost-grid" aria-hidden="true"></div>
+        <div class="lost-meter"><div class="lost-bar"><span id="lost-fill"></span></div><b id="lost-pct">0%</b></div>
+        <p class="lost-alert" id="lost-alert" role="status"></p>
+        <button class="btn btn-ghost lost-btn" id="lost-btn" type="button" data-hover><span data-i18n="bn.l.btn">Tap: I'm lost</span></button>
+      </article>
+
+      <!-- 3. Auto-translate -->
+      <article class="bcard b-tr">
+        <p class="panel-who" data-i18n="bn.t.who">Everyone · Auto-translate</p>
+        <h3 data-i18n="bn.t.h">The teacher writes once. Every parent reads it in their language.</h3>
+        <div class="tr-msg" id="tr-msg">
+          <small id="tr-lang">English</small>
+          <p id="tr-text" dir="auto">Reminder: science trip tomorrow. Please send a packed lunch.</p>
+        </div>
+        <div class="tr-dots" id="tr-dots" aria-hidden="true"></div>
+      </article>
+
+      <!-- 4. Bus tracking -->
+      <article class="bcard b-bus">
+        <p class="panel-who" data-i18n="bn.b.who">Parents · Bus tracking</p>
+        <h3 data-i18n="bn.b.h">Know exactly when the bus arrives.</h3>
+        <svg class="bus-map" viewBox="0 0 320 150" aria-hidden="true">
+          <path class="road-bg" d="M24 122 C 80 122, 70 40, 140 42 S 220 118, 296 30"/>
+          <path class="road" id="bus-route" d="M24 122 C 80 122, 70 40, 140 42 S 220 118, 296 30"/>
+          <circle class="stop" cx="24" cy="122" r="7"/>
+          <g class="home" transform="translate(296 30)"><circle r="13"/><text y="5" text-anchor="middle">🏠</text></g>
+          <g id="bus"><circle r="13" class="bus-dot"/><text y="5" text-anchor="middle">🚌</text></g>
+        </svg>
+        <p class="eta" id="eta" role="status">5 min away</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- Learning Passport: the student's file travels from the old school to the new one -->
+  <section class="passport" id="passport">
+    <div class="pp-head">
+      <p class="kicker" data-i18n="pp.kicker">Learning Passport</p>
+      <h2 class="big split" data-i18n="pp.title">Their learning<br>moves <em>with them.</em></h2>
+      <p class="pp-lead" data-i18n="pp.lead">Every report, grade and certificate is saved in the student's SchoolKey passport, linked to the parent's UAE Pass, not locked inside one school. Change schools, and nothing is lost.</p>
+    </div>
+
+    <div class="pp-stage" id="pp-stage">
+      <div class="school school-a" id="school-a">
+        <span class="school-ico" aria-hidden="true">🏫</span>
+        <b data-i18n="pp.a">Old school</b>
+        <small data-i18n="pp.a2">Dubai · 2019–2026</small>
+      </div>
+      <div class="pp-road" aria-hidden="true"></div>
+      <div class="school school-b" id="school-b">
+        <span class="school-ico" aria-hidden="true">🏫</span>
+        <b data-i18n="pp.b">New school</b>
+        <small data-i18n="pp.b2">Abu Dhabi · 2026–</small>
+      </div>
+
+      <article class="pp-card" id="pp-card" data-i18n-aria="pp.aria" aria-label="Sara's learning passport moving to her new school">
+        <div class="pp-top">
+          <span class="pp-logo" aria-hidden="true"><svg viewBox="0 0 32 32"><rect width="32" height="32" rx="9"/><circle cx="12" cy="16" r="5"/><path d="M17 16h9m-3 0v4m-3-4v3"/></svg></span>
+          <span data-i18n="pp.card">Learning Passport</span>
+        </div>
+        <p class="pp-name" data-i18n="pp.name">Sara A. · Grade 8</p>
+        <div class="pp-stats">
+          <div><b>14</b><small data-i18n="pp.r">Reports</small></div>
+          <div><b>9</b><small data-i18n="pp.c">Certificates</small></div>
+          <div><b>23</b><small data-i18n="pp.p">Projects</small></div>
+        </div>
+        <p class="pp-tag up-tag" data-i18n="pp.strong">Strong: Science, Arabic</p>
+        <p class="pp-tag warn-tag" data-i18n="pp.weak">Needs support: essay writing</p>
+        <span class="pp-stamp" id="pp-stamp" data-i18n="pp.stamp">Received ✓</span>
+      </article>
+    </div>
+
+    <ul class="pp-points">
+      <li><b data-i18n="pp.k1">Owned by the family</b><span data-i18n="pp.v1">Free forever. Schools see it only while the child is enrolled, and only what parents share.</span></li>
+      <li><b data-i18n="pp.k2">One tap to move</b><span data-i18n="pp.v2">The new school knows the student on day one: strengths, weak topics, every report.</span></li>
+      <li><b data-i18n="pp.k3">Ready for university</b><span data-i18n="pp.v3">KG to grade 12 in one place, turned into a portfolio for applications.</span></li>
+    </ul>
+  </section>
+
+  <!-- Numbers -->
+  <section class="stats">
+    <div class="stat"><b data-count="6">0</b><span data-i18n="st.1">apps replaced</span></div>
+    <div class="stat"><b data-count="1">0</b><span data-i18n="st.2">login with UAE Pass</span></div>
+    <div class="stat"><b data-count="4" data-suffix="h" data-i18n-suffix="st.h">0</b><span data-i18n="st.3">teacher time saved a week</span></div>
+    <div class="stat"><b data-count="0" data-from="23">23</b><span data-i18n="st.4">WhatsApp groups left</span></div>
+  </section>
+
+  <!-- Marquee -->
+  <section class="marquee" aria-label="Features">
+    <div class="marquee-row"><div class="marquee-track" data-i18n="mq.1">
+      <span>Homework</span><span>✦</span><span>Grade book</span><span>✦</span><span>Exams</span><span>✦</span><span>Attendance</span><span>✦</span><span>Timetables</span><span>✦</span><span>AI reports</span><span>✦</span>
+    </div></div>
+    <div class="marquee-row reverse"><div class="marquee-track" data-i18n="mq.2">
+      <span>UAE Pass</span><span>✦</span><span>Arabic &amp; English</span><span>✦</span><span>Parent alerts</span><span>✦</span><span>Report cards</span><span>✦</span><span>Fee payments</span><span>✦</span><span>Learning Passport</span><span>✦</span>
+    </div></div>
+  </section>
+
+  <!-- Pricing -->
+  <section class="pricing" id="pricing">
+    <p class="kicker" data-i18n="pr.kicker">Pricing</p>
+    <h2 class="big split" data-i18n="pr.title">Schools pay.<br>Families <em>never</em> do.</h2>
+    <div class="price-grid">
+      <article class="price tilt">
+        <h3 data-i18n="pr.s">Starter</h3><p class="amount" data-i18n="pr.free">Free</p><p class="per" data-i18n="pr.upto">up to 100 students</p>
+        <ul data-i18n="pr.sl"><li>Homework &amp; assignments</li><li>Grade book</li><li>Messages</li><li>Learning Passport</li></ul>
+        <a href="#demo" class="btn btn-ghost" data-hover><span data-i18n="pr.sb">Start free</span></a>
+      </article>
+      <article class="price tilt featured">
+        <p class="badge" data-i18n="pr.badge">Most schools</p>
+        <h3 data-i18n="pr.st">Standard</h3><p class="amount" data-i18n="pr.30">AED 30</p><p class="per" data-i18n="pr.per">per student / year</p>
+        <ul data-i18n="pr.stl"><li>All four role views</li><li>Timetable upload per grade</li><li>Report cards &amp; attendance</li><li>UAE Pass sign-in</li></ul>
+        <a href="#demo" class="btn btn-primary" data-hover><span data-i18n="nav.demo">Book a demo</span></a>
+      </article>
+      <article class="price tilt">
+        <h3 data-i18n="pr.p">Premium</h3><p class="amount" data-i18n="pr.50">AED 50</p><p class="per" data-i18n="pr.per">per student / year</p>
+        <ul data-i18n="pr.pl"><li>AI teacher assistant</li><li>Parent monthly comparison</li><li>Level-up assignments</li><li>At-risk alerts &amp; fee payments</li></ul>
+        <a href="#demo" class="btn btn-ghost" data-hover><span data-i18n="pr.pb">Talk to us</span></a>
+      </article>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq" id="faq">
+    <p class="kicker" data-i18n="fq.kicker">Questions schools ask</p>
+    <h2 class="big split" data-i18n="fq.title">Good <em>questions.</em></h2>
+    <div class="faq-list">
+      <details><summary data-i18n="fq.q1">Do parents need another app?</summary><p data-i18n="fq.a1">No. SchoolKey replaces the other apps. Students, parents, teachers and leaders all use one app, and parents with several children see them all in one account.</p></details>
+      <details><summary data-i18n="fq.q2">Where is student data stored?</summary><p data-i18n="fq.a2">Inside the UAE. We never sell student data, never show ads, and never use it to train outside AI models.</p></details>
+      <details><summary data-i18n="fq.q3">What happens to records when a student changes school?</summary><p data-i18n="fq.a3">They stay in the student's Learning Passport, owned by the family. With the parent's approval, the new school receives them on day one.</p></details>
+      <details><summary data-i18n="fq.q4">Which curricula do you support?</summary><p data-i18n="fq.a4">British, American, IB, Indian and Ministry of Education curricula, each with its own grading scale and report card, in Arabic and English.</p></details>
+      <details><summary data-i18n="fq.q5">How long does it take to start?</summary><p data-i18n="fq.a5">About two weeks. We import your students, classes and timetables for free, and you can run SchoolKey beside your current system for a term.</p></details>
+      <details><summary data-i18n="fq.q6">Is UAE Pass sign-in available now?</summary><p data-i18n="fq.a6">UAE Pass sign-in arrives once SchoolKey is approved as a UAE Pass service provider. Until then, pilot schools use a secure email login.</p></details>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <section class="final" id="demo">
+    <h2 class="giant" data-i18n-aria="giant" aria-label="One key."><span class="giant-fill" id="giant" data-i18n="giant">One key.</span></h2>
+    <div class="final-grid">
+      <p class="final-lead" data-i18n="final.lead">Pilot places for next term are limited. Book a demo and see SchoolKey with your own classes.</p>
+      <form class="form" id="demo-form" novalidate>
+        <label><span data-i18n="f.name">Your name</span><input name="name" required autocomplete="name"></label>
+        <label><span data-i18n="f.school">School</span><input name="school" required></label>
+        <label><span data-i18n="f.email">Work email</span><input name="email" type="email" required autocomplete="email" dir="ltr"></label>
+        <button class="btn btn-primary magnetic" type="submit" data-hover><span data-i18n="f.btn">Request a demo</span></button>
+        <p class="form-msg" id="form-msg" role="status"></p>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <p data-i18n="ft.1">© 2026 SchoolKey · Made in the UAE</p>
+  <p class="muted" data-i18n="ft.2">UAE Pass sign-in arrives once SchoolKey is an approved UAE Pass service provider.</p>
+</footer>
+
+<!-- Safety net: if the animation scripts can't run on this device (old browser, blocked network),
+     hide the loading screen after a few seconds and show the site without animations. -->
+<script>
+  setTimeout(function () {
+    if (window.__skStarted) return;
+    var l = document.getElementById("loader");
+    if (l) l.parentNode.removeChild(l);
+    document.body.classList.remove("is-loading");
+    document.documentElement.classList.add("static");
+  }, 6000);
+</script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
