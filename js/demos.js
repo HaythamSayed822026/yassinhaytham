@@ -6,11 +6,9 @@ const $ = (s, el = document) => el.querySelector(s);
 
 const VOICE = {
   en: {
-    bcp: "en-US",
     text: "Hi! Here is Sara's week. She scored 18 out of 20 in her science quiz and finished every homework. Math is still the tricky part, especially linear equations, so her teacher suggests the 10-minute practice set this weekend. Next week: Arabic exam on Wednesday. Have a lovely weekend!",
   },
   ar: {
-    bcp: "ar-SA",
     text: "مرحباً! هذا ملخص أسبوع سارة. حصلت على 18 من 20 في اختبار العلوم، وأنهت جميع واجباتها. ما زالت الرياضيات تحتاج إلى بعض الجهد، خاصة المعادلات الخطية، لذلك تقترح معلمتها مجموعة تمارين لمدة عشر دقائق في عطلة نهاية الأسبوع. الأسبوع القادم: اختبار اللغة العربية يوم الأربعاء. عطلة سعيدة!",
   },
 };
@@ -37,10 +35,15 @@ export function setupDemos({ animated }) {
 }
 
 /* ---------- 1. Weekly voice recap ---------- */
+// Plays a recorded audio file (works on every phone, even in silent mode)
+// and lights up each word at its start time.
+const WORD_TIMES = {"en": [0.0, 0.598, 0.915, 1.126, 1.548, 1.917, 2.159, 2.547, 2.74, 2.983, 3.176, 3.37, 3.564, 3.806, 4.242, 4.532, 4.774, 5.258, 5.597, 6.13, 6.438, 6.643, 7.002, 7.259, 7.669, 8.028, 8.644, 9.054, 9.67, 9.875, 10.132, 10.594, 11.107, 11.363, 11.928, 12.441, 12.697, 13.005, 13.518, 13.96, 14.477, 14.959, 15.32, 15.561, 16.284, 16.598, 16.755, 17.174], "ar": [0.0, 0.916, 1.395, 1.969, 2.639, 3.309, 3.945, 4.475, 4.899, 5.323, 5.747, 6.17, 7.018, 7.972, 8.714, 9.349, 10.515, 10.892, 11.456, 12.492, 13.151, 13.622, 14.092, 14.846, 15.411, 16.446, 17.293, 17.858, 18.517, 19.365, 20.118, 20.871, 21.436, 21.906, 22.565, 22.942, 23.507, 24.166, 25.107, 25.88, 26.652, 27.442, 28.133, 29.022, 29.515, 30.601, 31.174]};
+
 function voiceRecap() {
   const card = $(".b-voice"), btn = $("#voice-play"), textEl = $("#voice-text"), wave = $("#wave");
-  const synth = window.speechSynthesis;
-  let vl = lang, speaking = false, words = [], timer = null, gotBoundary = false;
+  const audio = new Audio();
+  audio.preload = "none";
+  let vl = lang, words = [], raf = null, current = -1;
 
   for (let i = 0; i < 40; i++) {
     const bar = document.createElement("i");
@@ -50,66 +53,54 @@ function voiceRecap() {
   }
 
   function render() {
-    const { text } = VOICE[vl];
     textEl.lang = vl;
     textEl.dir = vl === "ar" ? "rtl" : "ltr";
     textEl.innerHTML = "";
     words = [];
-    let idx = 0;
-    text.split(/(\s+)/).forEach((part) => {
-      if (/^\s+$/.test(part)) { textEl.appendChild(document.createTextNode(part)); idx += part.length; return; }
+    VOICE[vl].text.split(/(\s+)/).forEach((part) => {
+      if (!part) return;
+      if (/^\s+$/.test(part)) return textEl.appendChild(document.createTextNode(part));
       const span = document.createElement("span");
       span.textContent = part;
-      words.push({ start: idx, span });
+      words.push(span);
       textEl.appendChild(span);
-      idx += part.length;
     });
   }
-  const highlight = (i) => words.forEach((w, j) => w.span.classList.toggle("w-on", j === i));
+  function highlight(i) {
+    if (i === current) return;
+    if (words[current]) words[current].classList.remove("w-on");
+    if (words[i]) words[i].classList.add("w-on");
+    current = i;
+  }
+  function follow() {
+    const times = WORD_TIMES[vl], now = audio.currentTime;
+    let i = 0;
+    while (i + 1 < times.length && times[i + 1] <= now) i++;
+    highlight(i);
+    raf = requestAnimationFrame(follow);
+  }
 
+  const playing = () => !audio.paused && !audio.ended;
   function stop() {
-    speaking = false;
-    clearInterval(timer);
-    if (synth) synth.cancel();
+    audio.pause();
+    cancelAnimationFrame(raf);
     card.classList.remove("is-playing");
     btn.setAttribute("aria-label", t("voicePlay"));
     highlight(-1);
   }
-
   function play() {
-    speaking = true;
-    gotBoundary = false;
+    const src = `audio/recap-${vl}.m4a`;
+    if (!audio.src.endsWith(src)) audio.src = src;
+    audio.currentTime = 0;
     card.classList.add("is-playing");
     btn.setAttribute("aria-label", t("voicePause"));
-    // Word highlight: real word timings when the voice reports them, otherwise an estimate.
-    let i = 0;
-    timer = setInterval(() => {
-      if (gotBoundary) return;
-      highlight(i++);
-      if (i > words.length) stop();
-    }, vl === "ar" ? 430 : 330);
-    if (!synth) return;
-    const u = new SpeechSynthesisUtterance(VOICE[vl].text);
-    u.lang = VOICE[vl].bcp;
-    u.rate = 0.98;
-    const voice = synth.getVoices().find((v) => v.lang.toLowerCase().startsWith(vl));
-    if (voice) u.voice = voice;
-    u.onboundary = (e) => {
-      if (e.name && e.name !== "word") return;
-      gotBoundary = true;
-      let w = 0;
-      while (w + 1 < words.length && words[w + 1].start <= e.charIndex) w++;
-      highlight(w);
-    };
-    u.onend = () => { if (speaking) stop(); };
-    u.onerror = () => {}; // the estimate keeps running if the device has no voice
-    synth.cancel();
-    synth.speak(u);
+    audio.play().then(() => { cancelAnimationFrame(raf); follow(); }).catch(stop);
   }
+  audio.addEventListener("ended", stop);
 
-  btn.addEventListener("click", () => (speaking ? stop() : play()));
+  btn.addEventListener("click", () => (playing() ? stop() : play()));
   document.querySelectorAll("[data-vl]").forEach((b) => b.addEventListener("click", () => {
-    const wasPlaying = speaking;
+    const wasPlaying = playing();
     stop();
     vl = b.dataset.vl;
     document.querySelectorAll("[data-vl]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
@@ -117,7 +108,6 @@ function voiceRecap() {
     if (wasPlaying) play();
   }));
   document.querySelectorAll("[data-vl]").forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.vl === vl)));
-  if (synth) synth.getVoices(); // some browsers load their voice list on first ask
   window.addEventListener("pagehide", stop);
   render();
 }
